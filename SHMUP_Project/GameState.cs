@@ -85,7 +85,7 @@ namespace SHMUP_Project
             };
             myBackSpace1 = GenerateStarMap(800, 1080, 1000, new Color(255, 255, 255, 255));
             myBackSpace2 = GenerateStarMap(800, myBackWidth, 1000, new Color(255, 255, 255, 200));
-            for (int i = 0; i < 400; i++)
+            for (int i = 0; i < 600; i++)
             {
                 myStarsFront.Add(new Point(myRnd.Next(0,myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight)));
                 myStarsMiddle.Add(new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight)));
@@ -343,6 +343,7 @@ namespace SHMUP_Project
             myBackgroundDir = new Point(1, 0);
             myGame.myGraphics.PreferredBackBufferHeight = 800;
             myGame.myGraphics.PreferredBackBufferWidth = 1080;
+            myGame.myGraphics.ApplyChanges();
 
         }
         public void BackDirRight()
@@ -350,18 +351,33 @@ namespace SHMUP_Project
             myBackgroundDir = new Point(-1, 0);
             myGame.myGraphics.PreferredBackBufferHeight = 800;
             myGame.myGraphics.PreferredBackBufferWidth = 1080;
+            myGame.myGraphics.ApplyChanges();
         }
         public void BackDirUp()
         {
             myBackgroundDir = new Point(0, 1);
             myGame.myGraphics.PreferredBackBufferHeight = 1080;
-            myGame.myGraphics.PreferredBackBufferWidth = 800;
+            myGame.myGraphics.PreferredBackBufferWidth = 1000;
+            myGame.myGraphics.ApplyChanges();
+            for (int i = 0; i < 600; i++)
+            {
+                myStarsFront[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+                myStarsMiddle[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+                myStarsBack[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+            }
         }
         public void BackDirDown()
         {
             myBackgroundDir = new Point(0, -1);
             myGame.myGraphics.PreferredBackBufferHeight = 1080;
-            myGame.myGraphics.PreferredBackBufferWidth = 800;
+            myGame.myGraphics.PreferredBackBufferWidth = 1000;
+            myGame.myGraphics.ApplyChanges();
+            for (int i = 0; i < 600; i++)
+            {
+                myStarsFront[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+                myStarsMiddle[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+                myStarsBack[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+            }
         }
 
         public override void Draw(GameTime someGameTime, SpriteBatch aSpriteBatch)

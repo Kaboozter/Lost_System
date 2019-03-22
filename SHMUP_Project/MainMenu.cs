@@ -29,7 +29,7 @@ namespace SHMUP_Project
             myMenu = someContent.Load<Texture2D>("menu");
             mySong = someContent.Load<Song>("menuMusic");
 
-            MediaPlayer.Play(mySong);
+            //MediaPlayer.Play(mySong);
             MediaPlayer.IsRepeating = true;
 
             #region Creating Button
