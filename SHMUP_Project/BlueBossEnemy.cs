@@ -25,7 +25,7 @@ namespace SHMUP_Project
         }
         public override void Draw(SpriteBatch aSpriteBatch)
         {
-
+            aSpriteBatch.Draw(myTexture, myPosition, null, Color.White, myRotation, myOffset, myScale, SpriteEffects.None, 0);
         }
     }
 }

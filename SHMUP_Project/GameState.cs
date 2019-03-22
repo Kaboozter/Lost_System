@@ -15,29 +15,12 @@ namespace SHMUP_Project
 {
     class GameState : States
     {
-        float attackTimer = 10;
-        float moveTimer = 15;
-        float pressTimer;
-        float timeElapsed;
-        float smartPercent;
-        float delay = 2f;
-        float remainingDelay = 1.5f;
-        float enemyCount = 3;
-        float enemiesPerLine = 1;
-        float speed = 1;
-        float myTimer, myOriginalTimer = 10;
-        
 
-        float health;
-        int myBackY1, myBackY2, myBackY3, myBackWidth = 1080;
+        float myTimer, myOriginalTimer = 10;
+
+        int myBackWidth = 1080;
         Point myBackgroundDir = new Point(0,1);
 
-        public float score;
-        float invTimer = 1;
-        bool manualSpawning = true;
-        bool inv;
-        int wait = 0;
-        string powerupTimer = "0";
         List<Bullet> myBullets;
         List<Enemy> myEnemies;
         List<Timer> myTimers = new List<Timer>();
@@ -53,7 +36,7 @@ namespace SHMUP_Project
         Random myRnd = new Random();
         SpriteFont myFont;
         Texture2D myPowerupsTexture;
-        Texture2D myEnemyTexture;
+        Texture2D myEnemyTexture, myBossTexture;
         Texture2D myStarTexture;
         Song mySong;
         Color myColor = Color.White;
@@ -64,21 +47,20 @@ namespace SHMUP_Project
             myBulletTexture = myGame.Content.Load<Texture2D>("ball.1");
             myEnemyTexture = myGame.Content.Load<Texture2D>("GreenDude");
             myStarTexture = myGame.Content.Load<Texture2D>("strass");
+            myBossTexture = myGame.Content.Load<Texture2D>("BigBlueBoss");
             myPlayer = new Player(myGame.Content.Load<Texture2D>("squareship"), myGame)
             {
-                myHp = health,
             };
             myEnemies = new List<Enemy>
             {
-                new CoolEnemy(myEnemyTexture, new Vector2(myGame.myGraphics.PreferredBackBufferWidth / 2, 0), new Vector2(0,1), 5, new Vector2(0.2f, 0.2f), 0, Color.White,1,this)
+                new CoolEnemy(myEnemyTexture, new Vector2(myGame.myGraphics.PreferredBackBufferWidth / 2, 0), new Vector2(0,1), 5, new Vector2(0.2f, 0.2f), 0, Color.White,1,this),
+                new BlueBossEnemy(myBossTexture, new Vector2(myGame.myGraphics.PreferredBackBufferWidth / 2 , 0), new Vector2(0,1), 5, new Vector2(1f, 1f), 0, Color.White,1,this)
 
             };
             myGame.myGraphics.PreferredBackBufferHeight = 800;
             myGame.myGraphics.PreferredBackBufferWidth = 1080;
             myGame.myGraphics.ApplyChanges();
-            myBackY1 = 0;
-            myBackY2 = 480;
-            myBackY3 = 960;
+
             myBullets = new List<Bullet>
             {
                 new Bullet(2, new Vector2(1, -1), myBulletTexture, new Vector2(3000, 3000), 1, Color.Black, 1)
@@ -228,22 +210,7 @@ namespace SHMUP_Project
             for (int i = myBullets.Count-1; i >= 0; i--)
             {
                 myBullets[i].Update(someGameTime);
-                //if (myBullets[i].myPosition.X < 0)
-                //{
-                //    myBullets.RemoveAt(i);
-                //}
-                //if (myBullets[i].myPosition.X + myBullets[i].myTexture.Width > myGame.myGraphics.PreferredBackBufferWidth)
-                //{
-                //    myBullets.RemoveAt(i);
-                //}
-                //if (myBullets[i].myPosition.Y < 0)
-                //{
-                //    myBullets.RemoveAt(i);
-                //}
-                //if (myBullets[i].myPosition.Y + myBullets[i].myTexture.Height > myGame.myGraphics.PreferredBackBufferHeight)
-                //{
-                //    myBullets.RemoveAt(i);
-                //}
+
                 for (int j = 0; j < myEnemies.Count; j++)
                 {
                     if (myBullets[i].myRectangle.Intersects(myEnemies[j].myRectangle))
