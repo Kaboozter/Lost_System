@@ -40,6 +40,8 @@ namespace SHMUP_Project
         {
             Movement();
 
+            myRectangle.Location = myPosition.ToPoint();
+
             #region Worldwalls
             if (myPosition.X < 0)
             {

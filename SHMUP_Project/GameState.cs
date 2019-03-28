@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
+using System.Diagnostics;
 
 
 namespace SHMUP_Project
@@ -16,14 +17,14 @@ namespace SHMUP_Project
     class GameState : States
     {
 
-        float myTimer, myOriginalTimer = 10;
+        float myTimer, myOriginalTimer = 10/*,myBossTimer, myOriginalBossTimer = 2*/;
 
         int myBackWidth = 1080;
         Point myBackgroundDir = new Point(0,1);
 
-        List<Bullet> myBullets;
+        public List<Bullet> myBullets;
         List<Enemy> myEnemies;
-        List<Timer> myTimers = new List<Timer>();
+        Dictionary<int,Timer> myTimers = new Dictionary<int, Timer>();
         List<Point> myStarsFront = new List<Point>();
         List<Point> myStarsMiddle = new List<Point>();
         List<Point> myStarsBack = new List<Point>();
@@ -51,15 +52,16 @@ namespace SHMUP_Project
             myPlayer = new Player(myGame.Content.Load<Texture2D>("squareship"), myGame)
             {
             };
+            myGame.myGraphics.PreferredBackBufferHeight = 1080;
+            myGame.myGraphics.PreferredBackBufferWidth = 800;
+            myGame.myGraphics.ApplyChanges();
             myEnemies = new List<Enemy>
             {
                 new CoolEnemy(myEnemyTexture, new Vector2(myGame.myGraphics.PreferredBackBufferWidth / 2, 0), new Vector2(0,1), 5, new Vector2(0.2f, 0.2f), 0, Color.White,1,this),
                 new BlueBossEnemy(myBossTexture, new Vector2(myGame.myGraphics.PreferredBackBufferWidth / 2 , 0), new Vector2(0,1), 5, new Vector2(1f, 1f), 0, Color.White,1,this)
 
             };
-            myGame.myGraphics.PreferredBackBufferHeight = 800;
-            myGame.myGraphics.PreferredBackBufferWidth = 1080;
-            myGame.myGraphics.ApplyChanges();
+
 
             myBullets = new List<Bullet>
             {
@@ -83,9 +85,19 @@ namespace SHMUP_Project
             KeyboardState tempKeyState = Keyboard.GetState();
             myPlayer.Update(myBackgroundDir);
 
+
+
             for (int i = 0; i < myEnemies.Count; i++)
             {
                 myEnemies[i].Update(someGameTime);
+                if (myEnemies[i] is BlueBossEnemy && myEnemies[i].myAttackTimer <= 0)
+                {
+                    Shoot(-myEnemies[i].myMoveDir, myEnemies[i].myPosition + new Vector2(540, 130), 2);
+                    Shoot(-myEnemies[i].myMoveDir, myEnemies[i].myPosition + new Vector2(80, 130), 2);
+                    Debug.Write(myEnemies[i].myPosition);
+                    myEnemies[i].myAttackTimer = myEnemies[i].myAttackSpeed;
+                }
+                myEnemies[i].myAttackTimer -= tempDeltaTime;
             }
             if (myTimers.Count != 0)
             {
@@ -213,7 +225,7 @@ namespace SHMUP_Project
 
                 for (int j = 0; j < myEnemies.Count; j++)
                 {
-                    if (myBullets[i].myRectangle.Intersects(myEnemies[j].myRectangle))
+                    if (myBullets[i].myRectangle.Intersects(myEnemies[j].myRectangle) && myBullets[i].myOwner == 1)
                     {
                         myBullets.RemoveAt(i);
                         myEnemies.RemoveAt(j);
@@ -222,11 +234,22 @@ namespace SHMUP_Project
                 }
             }
 
+            for (int i = myBullets.Count - 1; i >= 0; i--)
+            {
+                myBullets[i].Update(someGameTime);
+
+                if (myBullets[i].myRectangle.Intersects(myPlayer.myRectangle) && myBullets[i].myOwner == 2)
+                {
+                    myBullets.RemoveAt(i);
+                    break;
+                }
+            }
+
             if ((tempMouse.LeftButton == ButtonState.Pressed) || tempKeyState.IsKeyDown(Keys.LeftShift))
             {
                 if (myPlayer.myAttackTimer <= 0)
                 {
-                    Shoot(myBackgroundDir.ToVector2());
+                    Shoot(myBackgroundDir.ToVector2(), (myPlayer.myPosition + myPlayer.myOffset),1);
                     myPlayer.myAttackTimer = myPlayer.myAttackSpeed;
                 }
             }
@@ -250,32 +273,32 @@ namespace SHMUP_Project
             return dir;
         }
 
-        public void Shoot(Vector2 aDir)
+        public void Shoot(Vector2 aDir, Vector2 aStartPos, int aOwner)
         {
             MouseState mouse = Mouse.GetState();
-            //if (player.myAmmo > 0)
-            //{
+
             if (aDir.X == 0)
             {
-                myBullets.Add(new Bullet(5f, aDir * -1, myBulletTexture, (myPlayer.myPosition + myPlayer.myOffset), 1, Color.LightBlue, 1));
+                myBullets.Add(new Bullet(5f, aDir * -1, myBulletTexture, aStartPos, aOwner, Color.LightBlue, 1));
             }
             else if (aDir.X != 0)
             {
-                myBullets.Add(new Bullet(5f, aDir * -1, myBulletTexture, (myPlayer.myPosition + myPlayer.myOffset), 1, Color.LightBlue, 2));
+                myBullets.Add(new Bullet(5f, aDir * -1, myBulletTexture, aStartPos, aOwner, Color.LightBlue, 2));
             }
-            //myBullets.Add(new Bullet(5f, new Vector2(0, 1), myBulletTexture, (myPlayer.myPosition + myPlayer.myOffset), 1, Color.LightBlue, 1));
-            //myBullets.Add(new Bullet(5f, new Vector2(-1, 0), myBulletTexture, (myPlayer.myPosition + myPlayer.myOffset), 1, Color.LightBlue, 2));
-            //myBullets.Add(new Bullet(5f, new Vector2(1, 0), myBulletTexture, (myPlayer.myPosition + myPlayer.myOffset), 1, Color.LightBlue, 2));
-
-            //    player.myAmmo--;
-            //}
 
         }
         public void ShootAlt()
         {
             Bullet tempBullet = new Bullet(10, new Vector2(-1, 0), myBulletTexture, (myPlayer.myPosition + myPlayer.myOffset), 1, Color.Gray, 3);
             myBullets.Add(tempBullet);
-            myTimers.Add(new Timer(5));
+            if (myTimers.Count == 0)
+            {
+                myTimers.Add(0, new Timer(5));
+            }
+            else
+            {
+                myTimers.Add(myTimers.Count,new Timer(5));
+            }
         }
 
         protected Texture2D GenerateStarMap(int someWidth, int someHeight, int aNumStars, Color aColor)
@@ -311,6 +334,12 @@ namespace SHMUP_Project
             myGame.myGraphics.PreferredBackBufferHeight = 800;
             myGame.myGraphics.PreferredBackBufferWidth = 1080;
             myGame.myGraphics.ApplyChanges();
+            for (int i = 0; i < 600; i++)
+            {
+                myStarsFront[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+                myStarsMiddle[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+                myStarsBack[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+            }
 
         }
         public void BackDirRight()
@@ -319,6 +348,12 @@ namespace SHMUP_Project
             myGame.myGraphics.PreferredBackBufferHeight = 800;
             myGame.myGraphics.PreferredBackBufferWidth = 1080;
             myGame.myGraphics.ApplyChanges();
+            for (int i = 0; i < 600; i++)
+            {
+                myStarsFront[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+                myStarsMiddle[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+                myStarsBack[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
+            }
         }
         public void BackDirUp()
         {

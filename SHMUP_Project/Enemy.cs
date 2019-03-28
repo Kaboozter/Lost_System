@@ -18,10 +18,12 @@ namespace SHMUP_Project
         public Vector2 myPosition;
         public Vector2 myScale;
         public Vector2 myOffset;
-        public bool myEnemySmart;
         public Color mycolor;
         public float mySpeed;
         public float myRotation;
+        public float myAttackSpeed = 0.2f;
+        public float myAttackTimer;
+        public GameState myCurGame;
         int myIndex = 0;
         List<Enemy> myEnemyList = new List<Enemy>();
 
@@ -30,7 +32,7 @@ namespace SHMUP_Project
             myEnemyList.Add(aEnemy);
         }
 
-        public Enemy(Texture2D aEnemyTexture, Vector2 aEnemyStartPos,Vector2 aDir, float someEnemySpeed, Vector2 aEnemyScale, float aEnemyRotation, Color aEnemyColor, int aType, States aState)
+        public Enemy(Texture2D aEnemyTexture, Vector2 aEnemyStartPos,Vector2 aDir, float someEnemySpeed, Vector2 aEnemyScale, float aEnemyRotation, Color aEnemyColor, int aType, GameState aState)
         {
             myTexture = aEnemyTexture;
             myPosition = aEnemyStartPos;
@@ -42,12 +44,15 @@ namespace SHMUP_Project
             mycolor = aEnemyColor;
             myRotation = aEnemyRotation;
             myIndex = myEnemyList.Count + 1;
+            myCurGame = aState;
         }
 
         public abstract void Update(GameTime someGameTime);
 
 
         public abstract void Draw(SpriteBatch aSpriteBatch);
+
+        public abstract void Attack(Vector2 someDir);
 
     }
 }
