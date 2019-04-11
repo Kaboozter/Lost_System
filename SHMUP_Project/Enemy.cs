@@ -40,7 +40,8 @@ namespace SHMUP_Project
             myMoveDir = aDir;
             myScale = aEnemyScale;
             myOffset = (aEnemyTexture.Bounds.Size.ToVector2() / 2) * myScale;
-            myRectangle = new Rectangle((aEnemyStartPos - myOffset).ToPoint(), (aEnemyTexture.Bounds.Size.ToVector2() * aEnemyScale).ToPoint());
+            myRectangle = new Rectangle((aEnemyStartPos - myOffset).ToPoint(), (aEnemyTexture.Bounds.Size.ToVector2() * myScale).ToPoint());
+           // myRectangle.Size = (myRectangle.Size.ToVector2() * myScale).ToPoint();
             mycolor = aEnemyColor;
             myRotation = aEnemyRotation;
             myIndex = myEnemyList.Count + 1;

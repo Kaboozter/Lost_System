@@ -18,7 +18,7 @@ namespace SHMUP_Project
 
         public override void Update(GameTime someGameTime)
         {
-            myAttackSpeed = 10;
+            myAttackSpeed = 0.5f;
             if (myPosition.Y < 150)
             {
                 myPosition += (mySpeed * myMoveDir);

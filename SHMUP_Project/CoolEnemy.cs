@@ -28,12 +28,34 @@ namespace SHMUP_Project
         {
             myPosition += (myMoveDir * mySpeed);
             myRectangle.Location = myPosition.ToPoint();
+            if (myRotation == 0)
+            {
+                myRectangle.Width = (int)(myTexture.Width * myScale.Y);
+                myRectangle.Height = (int)(myTexture.Height * myScale.Y);
+            }
+            if (myRotation == (float) Math.PI)
+            {
+                myRectangle.Width = (int)(myTexture.Width * myScale.Y);
+                myRectangle.Height = (int)(myTexture.Height * myScale.Y);
+            }
+            if (myRotation == ((float)Math.PI * 3) / 2)
+            {
+                myRectangle.Height = (int)(myTexture.Width * myScale.Y);
+                myRectangle.Width = (int)(myTexture.Height * myScale.Y);
+            }
+            if (myRotation == ((float)Math.PI) / 2)
+            {
+                myRectangle.Width = (int)(myTexture.Height * myScale.Y);
+                myRectangle.Height = (int)(myTexture.Width * myScale.Y);
+            }
         }
 
         public override void Draw(SpriteBatch aSpriteBatch)
         {
-            aSpriteBatch.Draw(myTexture, myPosition, null, Color.White, myRotation, myOffset, myScale, SpriteEffects.None, 0);
+            aSpriteBatch.Draw(myTexture, myRectangle, Color.Cyan);
+            aSpriteBatch.Draw(myTexture, myPosition + myOffset, null, Color.White, myRotation, myOffset, myScale, SpriteEffects.None, 0);
         }
+
         public override void Attack(Vector2 someDir)
         {
 

@@ -57,7 +57,7 @@ namespace SHMUP_Project
             else if (myType == 3)
             {
                 myPosition += (myDir * mySpeed);
-
+                myRectangle.Location = (myPosition - (myRectangle.Size.ToVector2() * 0.5f)).ToPoint();
             }
 
 

@@ -36,6 +36,7 @@ namespace SHMUP_Project
         {
             base.Initialize();
             IsMouseVisible = true;
+            
             //myGraphics.PreferredBackBufferHeight = 480;
             //myGraphics.PreferredBackBufferWidth = 800;
             myMenu = new MainMenu(this, GraphicsDevice, Content);

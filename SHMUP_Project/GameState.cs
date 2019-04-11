@@ -17,7 +17,7 @@ namespace SHMUP_Project
     class GameState : States
     {
 
-        float myTimer, myOriginalTimer = 10/*,myBossTimer, myOriginalBossTimer = 2*/;
+        float myTimer, myOriginalTimer = 1,myBossTimer, myOriginalBossTimer = 2;
 
         int myBackWidth = 1080;
         Point myBackgroundDir = new Point(0,1);
@@ -67,8 +67,7 @@ namespace SHMUP_Project
             {
                 new Bullet(2, new Vector2(1, -1), myBulletTexture, new Vector2(3000, 3000), 1, Color.Black, 1)
             };
-            myBackSpace1 = GenerateStarMap(800, 1080, 1000, new Color(255, 255, 255, 255));
-            myBackSpace2 = GenerateStarMap(800, myBackWidth, 1000, new Color(255, 255, 255, 200));
+
             for (int i = 0; i < 600; i++)
             {
                 myStarsFront.Add(new Point(myRnd.Next(0,myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight)));
@@ -85,15 +84,19 @@ namespace SHMUP_Project
             KeyboardState tempKeyState = Keyboard.GetState();
             myPlayer.Update(myBackgroundDir);
 
-
+            Debug.WriteLine(tempMouse.Position);
 
             for (int i = 0; i < myEnemies.Count; i++)
             {
                 myEnemies[i].Update(someGameTime);
                 if (myEnemies[i] is BlueBossEnemy && myEnemies[i].myAttackTimer <= 0)
                 {
-                    Shoot(-myEnemies[i].myMoveDir, myEnemies[i].myPosition + new Vector2(540, 130), 2);
-                    Shoot(-myEnemies[i].myMoveDir, myEnemies[i].myPosition + new Vector2(80, 130), 2);
+                    Vector2 tempDir1 = ((myPlayer.myPosition + myPlayer.myOffset) - (myEnemies[i].myPosition + new Vector2(540, 130) - myEnemies[i].myOffset));
+                    tempDir1.Normalize();
+                    Vector2 tempDir2 = ((myPlayer.myPosition + myPlayer.myOffset) - (myEnemies[i].myPosition + new Vector2(80, 130) - myEnemies[i].myOffset));
+                    tempDir2.Normalize();
+                    ShootAlt(-tempDir1, myEnemies[i].myPosition + new Vector2(540, 130) - myEnemies[i].myOffset, 2);
+                    ShootAlt(-tempDir2, myEnemies[i].myPosition + new Vector2(80, 130) - myEnemies[i].myOffset, 2);
                     Debug.Write(myEnemies[i].myPosition);
                     myEnemies[i].myAttackTimer = myEnemies[i].myAttackSpeed;
                 }
@@ -101,7 +104,7 @@ namespace SHMUP_Project
             }
             if (myTimers.Count != 0)
             {
-                for (int i = myTimers.Count-1; i > 0; i--)
+                for (int i = myTimers.Count - 1; i > 0; i--)
                 {
                     myTimers[i].Update(someGameTime);
                 }
@@ -112,19 +115,19 @@ namespace SHMUP_Project
             {
                 if (myBackgroundDir == new Point(0,1))
                 {
-                    myEnemies.Add(new CoolEnemy(myEnemyTexture, new Vector2(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth + 1), 0), new Vector2(0,1), 5, new Vector2(0.4f, 0.4f), 0, Color.Black, 1, this));
+                    myEnemies.Add(new CoolEnemy(myEnemyTexture, new Vector2(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth + 1), 0), new Vector2(0,1), 5, new Vector2(0.3f, 0.3f), 0, Color.Black, 1, this));
                 }
                 if (myBackgroundDir == new Point(0, -1))
                 {
-                    myEnemies.Add(new CoolEnemy(myEnemyTexture, new Vector2(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth + 1), myGame.myGraphics.PreferredBackBufferHeight), new Vector2(0, -1), 5, new Vector2(0.4f, 0.4f), (float)Math.PI, Color.Black, 1,this));
+                    myEnemies.Add(new CoolEnemy(myEnemyTexture, new Vector2(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth + 1), myGame.myGraphics.PreferredBackBufferHeight), new Vector2(0, -1), 5, new Vector2(0.3f, 0.3f), (float)Math.PI, Color.Black, 1,this));
                 }
                 if (myBackgroundDir == new Point(1, 0))
                 {
-                    myEnemies.Add(new CoolEnemy(myEnemyTexture, new Vector2(0, myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight + 1)), new Vector2(1, 0), 5, new Vector2(0.4f, 0.4f), ((float)Math.PI*3) / 2, Color.Black, 1,this));
+                    myEnemies.Add(new CoolEnemy(myEnemyTexture, new Vector2(0, myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight + 1)), new Vector2(1, 0), 5, new Vector2(0.3f, 0.3f), ((float)Math.PI*3) / 2, Color.Black, 1,this));
                 }
                 if (myBackgroundDir == new Point(-1, 0))
                 {
-                    myEnemies.Add(new CoolEnemy(myEnemyTexture, new Vector2(myGame.myGraphics.PreferredBackBufferWidth, myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight + 1)), new Vector2(-1, 0), 5, new Vector2(0.4f, 0.4f), ((float)Math.PI) / 2, Color.Black, 1,this));
+                    myEnemies.Add(new CoolEnemy(myEnemyTexture, new Vector2(myGame.myGraphics.PreferredBackBufferWidth, myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight + 1)), new Vector2(-1, 0), 5, new Vector2(0.3f, 0.3f), ((float)Math.PI) / 2, Color.Black, 1,this));
                 }
                 myTimer = myOriginalTimer;
             }
@@ -257,7 +260,7 @@ namespace SHMUP_Project
             {
                 if (myPlayer.myAttackTimer <= 0)
                 {
-                    ShootAlt();
+                    ShootAlt(myBackgroundDir.ToVector2(),(myPlayer.myPosition + myPlayer.myOffset),1);
                     myPlayer.myAttackTimer = myPlayer.myAttackSpeed;
                 }
             }
@@ -279,18 +282,18 @@ namespace SHMUP_Project
 
             if (aDir.X == 0)
             {
-                myBullets.Add(new Bullet(5f, aDir * -1, myBulletTexture, aStartPos, aOwner, Color.LightBlue, 1));
+                myBullets.Add(new Bullet(2f, aDir * -1, myBulletTexture, aStartPos, aOwner, Color.LightBlue, 1));
             }
             else if (aDir.X != 0)
             {
-                myBullets.Add(new Bullet(5f, aDir * -1, myBulletTexture, aStartPos, aOwner, Color.LightBlue, 2));
+                myBullets.Add(new Bullet(2f, aDir * -1, myBulletTexture, aStartPos, aOwner, Color.LightBlue, 2));
             }
 
         }
-        public void ShootAlt()
+        public void ShootAlt(Vector2 aDir, Vector2 aStartPos, int aOwner)
         {
-            Bullet tempBullet = new Bullet(10, new Vector2(-1, 0), myBulletTexture, (myPlayer.myPosition + myPlayer.myOffset), 1, Color.Gray, 3);
-            myBullets.Add(tempBullet);
+            //Bullet tempBullet = new Bullet(10, new Vector2(-1, 0), myBulletTexture, (myPlayer.myPosition + myPlayer.myOffset), 1, Color.Gray, 3);
+            myBullets.Add(new Bullet(10, -aDir, myBulletTexture, aStartPos, aOwner, Color.Gray, 3));
             if (myTimers.Count == 0)
             {
                 myTimers.Add(0, new Timer(5));
@@ -299,33 +302,6 @@ namespace SHMUP_Project
             {
                 myTimers.Add(myTimers.Count,new Timer(5));
             }
-        }
-
-        protected Texture2D GenerateStarMap(int someWidth, int someHeight, int aNumStars, Color aColor)
-        {
-            var size = someWidth * someHeight;
-            Color[] mapcolors = new Color[size];
-            for (var i = 0; i<size; i++)
-            {
-                mapcolors[i] = Color.Black;
-            }
-            Random rand = new Random();
-            for(var i=0;i<aNumStars;i++)
-            {
-                var n = rand.Next(size);
-                int m = rand.Next(0,2);
-                if (m == 0)
-                {
-                    mapcolors[n] = aColor;
-                }
-                else if (m == 1)
-                {
-                    mapcolors[n] = Color.White;
-                }
-            }
-            var tex = new Texture2D(myGraphicsDevice, someWidth, someHeight, false, SurfaceFormat.Color);
-            tex.SetData(mapcolors);
-            return tex;
         }
 
         public void BackDirLeft()
