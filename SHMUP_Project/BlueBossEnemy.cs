@@ -11,25 +11,28 @@ namespace SHMUP_Project
     class BlueBossEnemy : Enemy
     {
 
-        public BlueBossEnemy(Texture2D aEnemyTexture, Vector2 aEnemyStartPos, Vector2 aDir, float someEnemySpeed, Vector2 aEnemyScale, float aEnemyRotation, Color aEnemyColor, int aType, GameState aState) : base(aEnemyTexture, aEnemyStartPos, aDir, someEnemySpeed, aEnemyScale, aEnemyRotation, aEnemyColor, aType, aState)
+        public BlueBossEnemy(Texture2D aEnemyTexture, Vector2 aEnemyStartPos, Vector2 aDir, float someEnemySpeed, Vector2 aEnemyScale, float aEnemyRotation, Color aEnemyColor, int aType, GameState aState, Texture2D aBulletTexture) : base(aEnemyTexture, aEnemyStartPos, aDir, someEnemySpeed, aEnemyScale, aEnemyRotation, aEnemyColor, aType, aState, aBulletTexture)
         {
 
         }
 
         public override void Update(GameTime someGameTime)
         {
-            myAttackSpeed = 0.5f;
+            myAttackSpeed = 1f;
             if (myPosition.Y < 150)
             {
                 myPosition += (mySpeed * myMoveDir);
             }
-            myRectangle = new Rectangle(new Point((int)myPosition.X , (int)myPosition.Y ),new Point(400,65));
+            myRectangle = new Rectangle(new Point((int)(myPosition.X - (myOffset.X - (myOffset.X * 0.25))) , (int)(myPosition.Y) ),new Point(400,65));
 
             
         }
         public override void Draw(SpriteBatch aSpriteBatch)
         {
+
             aSpriteBatch.Draw(myTexture, myPosition, null, Color.White, myRotation, myOffset, myScale, SpriteEffects.None, 0);
+            //aSpriteBatch.Draw(myTexture, myRectangle, Color.Cyan);
+
         }
 
         public override void Attack(Vector2 someDir)

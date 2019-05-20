@@ -1,8 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
+using System.IO.IsolatedStorage;
+using System.IO;
+using System.Xml.Serialization;
 using System.Collections.Generic;
+using System;
 
 namespace SHMUP_Project
 {
@@ -80,5 +83,9 @@ namespace SHMUP_Project
             myCurState = state;
             myStateStack.Push(state);
         }
-    }
+
+
+
+   
+   }
 }

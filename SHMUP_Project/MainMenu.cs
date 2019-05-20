@@ -20,6 +20,7 @@ namespace SHMUP_Project
         Vector2 myUnderPos = new Vector2(325, 290);
         SpriteFont myButtonFont;
         Song mySong;
+        SaveGameData mySaveGame = new SaveGameData();
 
         public MainMenu(Game1 aGame1, GraphicsDevice someGraphics, ContentManager someContent) : base(aGame1, someGraphics, someContent)
         {
@@ -55,19 +56,11 @@ namespace SHMUP_Project
             };
             quitButtons.Click += QuitButtons_Click;
 
-            Buttons readMeButtons = new Buttons(buttonTexture, myButtonFont)
-            {
-                AccessPos = new Vector2(150, 200),
-                AccessText = "Read the readme"
-            };
-            readMeButtons.Click += ReadMeButtons_CLick;
-
             myButtons = new List<Components>()
             {
                 startEzButtons,
                 quitButtons,
                 startHardButtons,
-                readMeButtons,
             };
 
             #endregion
@@ -84,6 +77,7 @@ namespace SHMUP_Project
         private void QuitButtons_Click(object sender, EventArgs e)
         {
             myGame.Exit();
+            mySaveGame.Save();
         }
 
         private void StartButtons_Click(object sender, EventArgs e)
@@ -102,7 +96,7 @@ namespace SHMUP_Project
         public override void Draw(GameTime someGameTime, SpriteBatch aSpriteBatch)
         {
             aSpriteBatch.Begin();
-            aSpriteBatch.Draw(myMenu, new Rectangle(0, 0, 800, 480), Color.White);
+            aSpriteBatch.Draw(myMenu, new Rectangle(0, 0, 800, 480), Color.Cyan);
             //spriteBatch.DrawString(buttonFont,"Read the readme",new Vector2(150,200),Color.HotPink);
             foreach (Buttons component in myButtons)
             {
