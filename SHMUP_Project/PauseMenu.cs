@@ -29,16 +29,18 @@ namespace SHMUP_Project
         Vector2 myUnderPos = new Vector2(320, 290);
         Song mySong1;
         Song mySong2;
+        Game1 myGame;
 
         #endregion
 
-        public PauseMenu(Game1 Game, GraphicsDevice graphicsDevice, ContentManager content) : base(Game, graphicsDevice, content)
+        public PauseMenu(Game1 aGame, GraphicsDevice aGraphicsDevice, ContentManager someContent) : base(aGame, aGraphicsDevice, someContent)
         {
             #region Load
 
-            Texture2D buttonText = content.Load<Texture2D>("button");
-            SpriteFont buttonFont = content.Load<SpriteFont>("font");
-            myScreen = content.Load<Texture2D>("paused");
+            Texture2D buttonText = someContent.Load<Texture2D>("button");
+            SpriteFont buttonFont = someContent.Load<SpriteFont>("font");
+            myScreen = someContent.Load<Texture2D>("paused");
+            myGame = aGame;
             //mySong1 = content.Load<Song>("inGameMusic");
             //mySong2 = content.Load<Song>("menuMusic");
 
@@ -92,7 +94,7 @@ namespace SHMUP_Project
             {
                 myGame.PopStack();
             }
-            MediaPlayer.Play(mySong2);
+            //MediaPlayer.Play(mySong2);
         }
 
         private void ResumeButton_Click(object sender, EventArgs e)
@@ -119,6 +121,9 @@ namespace SHMUP_Project
             KeyboardState keys = Keyboard.GetState();
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             myTimer += deltaTime;
+            myGame.myGraphics.PreferredBackBufferWidth = 800;
+            myGame.myGraphics.PreferredBackBufferHeight = 480;
+            myGame.myGraphics.ApplyChanges();
 
             foreach (Buttons component in myButtons)
             {

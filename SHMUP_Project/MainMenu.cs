@@ -13,6 +13,8 @@ namespace SHMUP_Project
 {
     class MainMenu : States
     {
+        public static Texture2D myShipTexture;
+        public static int myShip = 0;
         private List<Components> myButtons;
         Texture2D myMenu;
         Vector2 myOverPos = new Vector2(325, 190);
@@ -29,7 +31,7 @@ namespace SHMUP_Project
             myButtonFont = someContent.Load<SpriteFont>("font");
             myMenu = someContent.Load<Texture2D>("menu");
             mySong = someContent.Load<Song>("menuMusic");
-
+            myShipTexture = someContent.Load<Texture2D>("squareship");
             //MediaPlayer.Play(mySong);
             MediaPlayer.IsRepeating = true;
 
@@ -38,14 +40,14 @@ namespace SHMUP_Project
             Buttons startHardButtons = new Buttons(buttonTexture, myButtonFont)
             {
                 AccessPos = myOverPos,
-                AccessText = "Normal Mode",
+                AccessText = "Play",
             };
             startHardButtons.Click += StartHardButtons_Click;
 
             Buttons startEzButtons = new Buttons(buttonTexture, myButtonFont)
             {
                 AccessPos = myCenterPos,
-                AccessText = "Baby Mode",
+                AccessText = "Ships",
             };
             startEzButtons.Click += StartButtons_Click;
 
@@ -71,18 +73,18 @@ namespace SHMUP_Project
 
         private void StartHardButtons_Click(object sender, EventArgs e)
         {
-            myGame.ChangeState(new GameState(myGame, myGraphicsDevice, myContentManager));
+            myGame.ChangeState(new GameState(myGame, myGraphicsDevice, myContentManager,myShipTexture, myShip));
         }
 
         private void QuitButtons_Click(object sender, EventArgs e)
         {
             myGame.Exit();
-            mySaveGame.Save();
+            SaveGameData.Save();
         }
 
         private void StartButtons_Click(object sender, EventArgs e)
         {
-            myGame.ChangeState(new GameState(myGame, myGraphicsDevice, myContentManager));
+            myGame.ChangeState(new ShipSelect(myGame,myGraphicsDevice,myContentManager));
         }
 
         private void ReadMeButtons_CLick(object sender, EventArgs e)

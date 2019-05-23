@@ -47,17 +47,15 @@ namespace SHMUP_Project
                 tempColor = Color.Gray;
             }
 
+            aSpriteBatch.Draw(myTexture, AccessRect, tempColor);
+
             if (!string.IsNullOrEmpty(AccessText))
             {
-                float tempX = (AccessRect.X + (AccessRect.Width * 0.5f) - (myFont.MeasureString(AccessText).X));
-                float tempY = (AccessRect.Y + (AccessRect.Width * 0.5f) - (myFont.MeasureString(AccessText).Y));
+                float tempX = (AccessRect.X + (AccessRect.Width * 0.5f) - (myFont.MeasureString(AccessText).X * 0.5f));
+                float tempY = (AccessRect.Y + (AccessRect.Height * 0.5f) - (myFont.MeasureString(AccessText).Y * 0.5f));
 
                 aSpriteBatch.DrawString(myFont, AccessText, new Vector2(tempX, tempY), AccessPaint);
             }
-
-            aSpriteBatch.Draw(myTexture, AccessRect, tempColor);
-
-
 
         }
         public override void Update(GameTime someGameTime)

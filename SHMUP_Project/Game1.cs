@@ -19,7 +19,7 @@ namespace SHMUP_Project
 
         MainMenu myMenu;
         public States myCurState;
-        Stack<States> myStateStack;
+        public Stack<States> myStateStack;
 
         public Game1()
         {

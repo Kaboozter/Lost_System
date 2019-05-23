@@ -10,24 +10,19 @@ namespace SHMUP_Project
 {
     class SaveGameData
     {
-        public SaveGameData()
-        {
-
-        }
-
         public static string GetFullDirectory => GetDirectory + @myFileName;
         public static string GetDirectory => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\LostSystem\LostSystemData\";
 
         static string myFileName = "saveData.ls";
 
-        public void Save()
+        public static void Save()
         {
             if (!Directory.Exists(GetDirectory))
             {
                 Directory.CreateDirectory(GetDirectory);
             }
 
-            File.WriteAllText(GetFullDirectory, "Hello World");
+            File.WriteAllText(GetFullDirectory, "Bye World");
         }
 
     }

@@ -63,6 +63,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enemies\ShootingEnemy.cs" />
     <Compile Include="SaveGameData.cs" />
+    <Compile Include="ShipSelect.cs" />
     <Compile Include="States.cs" />
     <Compile Include="Timer.cs" />
   </ItemGroup>

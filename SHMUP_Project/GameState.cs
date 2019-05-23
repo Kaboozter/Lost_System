@@ -19,7 +19,7 @@ namespace SHMUP_Project
 
         float myTimer, myOriginalTimer = 1,myBossTimer, myOriginalBossTimer = 2, myPressTimer;
 
-        int myBackWidth = 1080;
+        int myBackWidth = 1080, myScore = 0, myScoreTracker = 0;
         public Point myBackgroundDir = new Point(0,1);
 
         public List<Bullet> myBullets;
@@ -29,7 +29,7 @@ namespace SHMUP_Project
         List<Point> myStarsMiddle = new List<Point>();
         List<Point> myStarsBack = new List<Point>();
 
-
+        public Texture2D myPlayerTexture;
         Player myPlayer;
         Enemy myEnemy;
         Texture2D myBulletTexture;
@@ -42,7 +42,7 @@ namespace SHMUP_Project
         Song mySong;
         Color myColor = Color.White;
 
-        public GameState(Game1 aGame, GraphicsDevice someGraphics, ContentManager someContent) : base(aGame, someGraphics, someContent)
+        public GameState(Game1 aGame, GraphicsDevice someGraphics, ContentManager someContent, Texture2D aPlayerTexture, int aPlayer) : base(aGame, someGraphics, someContent)
         {
             myBackSpace1 = myGame.Content.Load<Texture2D>("stars");
             myBulletTexture = myGame.Content.Load<Texture2D>("ball.1");
@@ -50,7 +50,9 @@ namespace SHMUP_Project
             myStarTexture = myGame.Content.Load<Texture2D>("strass");
             myBossTexture = myGame.Content.Load<Texture2D>("BigBlueBoss");
             myBubbleTexture = myGame.Content.Load<Texture2D>("bubble");
-            myPlayer = new Player(myGame.Content.Load<Texture2D>("squareship"), myGame)
+            myFont = myGame.Content.Load<SpriteFont>("ammo");
+            myPlayerTexture = aPlayerTexture;
+            myPlayer = new Player(myPlayerTexture, myGame)
             {
             };
             myGame.myGraphics.PreferredBackBufferHeight = 1080;
@@ -103,17 +105,6 @@ namespace SHMUP_Project
                     ShootAlt(-tempDir2, myEnemies[i].myPosition + new Vector2(80, 130) - myEnemies[i].myOffset, 2, 5);
                     myEnemies[i].myAttackTimer = myEnemies[i].myAttackSpeed;
                 }
-                //if (myEnemies[i] is ShootingEnemy && myEnemies[i].myAttackTimer <= 0)
-                //{
-                //    Random tempRnd = new Random();
-                //    int tempShootChance = tempRnd.Next(0, 100);
-                //    if (tempShootChance == 2)
-                //    {
-                //        ShootAlt(-myBackgroundDir.ToVector2(), myEnemies[i].myPosition/* + (new Vector2(38, 130) * myEnemies[i].myScale)*/ + myEnemies[i].myOffset, 2, 5);
-                //        //ShootAlt(-myBackgroundDir.ToVector2(), myEnemies[i].myPosition + (new Vector2(220, 130) * myEnemies[i].myScale) + myEnemies[i].myOffset, 2, 5);
-                //        myEnemies[i].myAttackTimer = myEnemies[i].myAttackSpeed;
-                //    }
-                //}
                 myEnemies[i].myAttackTimer -= tempDeltaTime;
             }
             if (myTimers.Count != 0)
@@ -124,6 +115,11 @@ namespace SHMUP_Project
                 }
             }
 
+            if (myScore >= (myScoreTracker + 50))
+            {
+                myEnemies.Add(new BlueBossEnemy(myBossTexture, new Vector2(myGame.myGraphics.PreferredBackBufferWidth / 2, 0), new Vector2(0, 1), 5, new Vector2(1f, 1f), 0, Color.White, 1, this, myBulletTexture));
+                myScoreTracker = myScore;
+            }
 
             if (myTimer <= 0)
             {
@@ -247,6 +243,7 @@ namespace SHMUP_Project
                 myPressTimer = 0;
             }
 
+            // Hits enemy.
             for (int i = myBullets.Count - 1; i >= 0; i--)
             {
                 myBullets[i].Update(someGameTime);
@@ -257,9 +254,13 @@ namespace SHMUP_Project
                     {
                         myBullets.RemoveAt(i);
                         myEnemies.RemoveAt(j);
+                        myScore++;
+
                         break;
                     }
                 }
+
+
 
                 if (i != myBullets.Count)
                 {
@@ -285,7 +286,7 @@ namespace SHMUP_Project
                     }
                 }
             }
-
+            // Hits player.
             for (int i = myBullets.Count - 1; i >= 0; i--)
             {
                 myBullets[i].Update(someGameTime);
@@ -293,9 +294,11 @@ namespace SHMUP_Project
                 if (myBullets[i].myRectangle.Intersects(myPlayer.myRectangle) && myBullets[i].myOwner == 2)
                 {
                     myBullets.RemoveAt(i);
+                    myPlayer.myHp--;
                     break;
                 }
             }
+
 
             if ((tempMouse.LeftButton == ButtonState.Pressed) || tempKeyState.IsKeyDown(Keys.LeftShift))
             {
@@ -355,6 +358,7 @@ namespace SHMUP_Project
             }
         }
 
+        #region BackDir
         public void BackDirLeft()
         {
             myBackgroundDir = new Point(1, 0);
@@ -408,6 +412,7 @@ namespace SHMUP_Project
                 myStarsBack[i] = new Point(myRnd.Next(0, myGame.myGraphics.PreferredBackBufferWidth), myRnd.Next(0, myGame.myGraphics.PreferredBackBufferHeight));
             }
         }
+        #endregion
 
         public override void Draw(GameTime someGameTime, SpriteBatch aSpriteBatch)
         {
@@ -428,6 +433,10 @@ namespace SHMUP_Project
             {
                 myEnemies[i].Draw(aSpriteBatch);
             }
+            aSpriteBatch.DrawString(myFont,"Score:" + myScore,new Vector2(100, 50), Color.White);
+            aSpriteBatch.DrawString(myFont, "HP:" + myPlayer.myHp, new Vector2(myGame.myGraphics.PreferredBackBufferWidth - 100, 50), Color.White);
+
+
             myPlayer.Draw(aSpriteBatch);
             aSpriteBatch.End();
         }
