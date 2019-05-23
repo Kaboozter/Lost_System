@@ -13,6 +13,8 @@ namespace SHMUP_Project
 {
     class MainMenu : States
     {
+        public static Texture2D myShipTexture;
+        public static int myShip = 0;
         private List<Components> myButtons;
         Texture2D myMenu;
         Vector2 myOverPos = new Vector2(325, 190);
@@ -20,6 +22,7 @@ namespace SHMUP_Project
         Vector2 myUnderPos = new Vector2(325, 290);
         SpriteFont myButtonFont;
         Song mySong;
+        SaveGameData mySaveGame = new SaveGameData();
 
         public MainMenu(Game1 aGame1, GraphicsDevice someGraphics, ContentManager someContent) : base(aGame1, someGraphics, someContent)
         {
@@ -28,7 +31,7 @@ namespace SHMUP_Project
             myButtonFont = someContent.Load<SpriteFont>("font");
             myMenu = someContent.Load<Texture2D>("menu");
             mySong = someContent.Load<Song>("menuMusic");
-
+            myShipTexture = someContent.Load<Texture2D>("squareship");
             //MediaPlayer.Play(mySong);
             MediaPlayer.IsRepeating = true;
 
@@ -37,14 +40,14 @@ namespace SHMUP_Project
             Buttons startHardButtons = new Buttons(buttonTexture, myButtonFont)
             {
                 AccessPos = myOverPos,
-                AccessText = "Normal Mode",
+                AccessText = "Play",
             };
             startHardButtons.Click += StartHardButtons_Click;
 
             Buttons startEzButtons = new Buttons(buttonTexture, myButtonFont)
             {
                 AccessPos = myCenterPos,
-                AccessText = "Baby Mode",
+                AccessText = "Ships",
             };
             startEzButtons.Click += StartButtons_Click;
 
@@ -55,19 +58,11 @@ namespace SHMUP_Project
             };
             quitButtons.Click += QuitButtons_Click;
 
-            Buttons readMeButtons = new Buttons(buttonTexture, myButtonFont)
-            {
-                AccessPos = new Vector2(150, 200),
-                AccessText = "Read the readme"
-            };
-            readMeButtons.Click += ReadMeButtons_CLick;
-
             myButtons = new List<Components>()
             {
                 startEzButtons,
                 quitButtons,
                 startHardButtons,
-                readMeButtons,
             };
 
             #endregion
@@ -78,17 +73,18 @@ namespace SHMUP_Project
 
         private void StartHardButtons_Click(object sender, EventArgs e)
         {
-            myGame.ChangeState(new GameState(myGame, myGraphicsDevice, myContentManager));
+            myGame.ChangeState(new GameState(myGame, myGraphicsDevice, myContentManager,myShipTexture, myShip));
         }
 
         private void QuitButtons_Click(object sender, EventArgs e)
         {
             myGame.Exit();
+            SaveGameData.Save();
         }
 
         private void StartButtons_Click(object sender, EventArgs e)
         {
-            myGame.ChangeState(new GameState(myGame, myGraphicsDevice, myContentManager));
+            myGame.ChangeState(new ShipSelect(myGame,myGraphicsDevice,myContentManager));
         }
 
         private void ReadMeButtons_CLick(object sender, EventArgs e)
@@ -102,7 +98,7 @@ namespace SHMUP_Project
         public override void Draw(GameTime someGameTime, SpriteBatch aSpriteBatch)
         {
             aSpriteBatch.Begin();
-            aSpriteBatch.Draw(myMenu, new Rectangle(0, 0, 800, 480), Color.White);
+            aSpriteBatch.Draw(myMenu, new Rectangle(0, 0, 800, 480), Color.Cyan);
             //spriteBatch.DrawString(buttonFont,"Read the readme",new Vector2(150,200),Color.HotPink);
             foreach (Buttons component in myButtons)
             {

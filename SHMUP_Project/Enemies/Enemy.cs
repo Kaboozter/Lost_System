@@ -23,6 +23,7 @@ namespace SHMUP_Project
         public float myRotation;
         public float myAttackSpeed = 0.2f;
         public float myAttackTimer;
+        public Texture2D myBulletTexture;
         public GameState myCurGame;
         int myIndex = 0;
         List<Enemy> myEnemyList = new List<Enemy>();
@@ -32,7 +33,7 @@ namespace SHMUP_Project
             myEnemyList.Add(aEnemy);
         }
 
-        public Enemy(Texture2D aEnemyTexture, Vector2 aEnemyStartPos,Vector2 aDir, float someEnemySpeed, Vector2 aEnemyScale, float aEnemyRotation, Color aEnemyColor, int aType, GameState aState)
+        public Enemy(Texture2D aEnemyTexture, Vector2 aEnemyStartPos,Vector2 aDir, float someEnemySpeed, Vector2 aEnemyScale, float aEnemyRotation, Color aEnemyColor, int aType, GameState aState, Texture2D aBulletTexture)
         {
             myTexture = aEnemyTexture;
             myPosition = aEnemyStartPos;
@@ -46,10 +47,10 @@ namespace SHMUP_Project
             myRotation = aEnemyRotation;
             myIndex = myEnemyList.Count + 1;
             myCurGame = aState;
+            myBulletTexture = aBulletTexture;
         }
 
         public abstract void Update(GameTime someGameTime);
-
 
         public abstract void Draw(SpriteBatch aSpriteBatch);
 
