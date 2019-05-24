@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
-using System.Diagnostics;
+using System.IO;
 
 namespace SHMUP_Project
 {
@@ -19,6 +19,7 @@ namespace SHMUP_Project
 
         float myTimer = 0f;
         int myShipSelected = 0;
+        int[] mySaveData = new int[5];
         bool myPaused = true;
         List<Components> myButtons;
         List<Texture2D> myShips = new List<Texture2D>();
@@ -39,6 +40,8 @@ namespace SHMUP_Project
 
         public ShipSelect(Game1 aGame, GraphicsDevice aGraphicsDevice, ContentManager someContent) : base(aGame, aGraphicsDevice, someContent)
         {
+            mySaveData = SaveGameData.GetSaveData();
+
             #region Load
 
             myButtonText = someContent.Load<Texture2D>("button");
@@ -52,11 +55,12 @@ namespace SHMUP_Project
             //mySong2 = content.Load<Song>("menuMusic");
             myShipParts = new List<int>
             {
-                5,
-                0
+                mySaveData[0],
+                mySaveData[1]
             };
 
             #endregion
+
 
             MediaPlayer.IsRepeating = true;
 
@@ -99,6 +103,7 @@ namespace SHMUP_Project
             MainMenu.myShipTexture = myShips[myShipSelected];
             MainMenu.myShip = myShipSelected;
             myGame.PopStack();
+            SaveGameData.mySplittedSaveData[3] = myShipSelected + 1;
             SaveGameData.Save();
             //MediaPlayer.Play(mySong2);
         }

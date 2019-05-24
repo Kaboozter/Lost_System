@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
 using System.Diagnostics;
+using System.IO;
 
 
 namespace SHMUP_Project
@@ -22,12 +23,15 @@ namespace SHMUP_Project
         int myBackWidth = 1080, myScore = 0, myScoreTracker = 0;
         public Point myBackgroundDir = new Point(0,1);
 
+        public static Point myDir;
+
         public List<Bullet> myBullets;
         List<Enemy> myEnemies;
         Dictionary<int,Timer> myTimers = new Dictionary<int, Timer>();
         List<Point> myStarsFront = new List<Point>();
         List<Point> myStarsMiddle = new List<Point>();
         List<Point> myStarsBack = new List<Point>();
+        int[] mySaveData = new int[5];
 
         public Texture2D myPlayerTexture;
         Player myPlayer;
@@ -44,13 +48,15 @@ namespace SHMUP_Project
 
         public GameState(Game1 aGame, GraphicsDevice someGraphics, ContentManager someContent, Texture2D aPlayerTexture, int aPlayer) : base(aGame, someGraphics, someContent)
         {
+            mySaveData = SaveGameData.GetSaveData();
+
             myBackSpace1 = myGame.Content.Load<Texture2D>("stars");
-            myBulletTexture = myGame.Content.Load<Texture2D>("ball.1");
+            myBulletTexture = myGame.Content.Load<Texture2D>("BulletBlue");
             myEnemyTexture = myGame.Content.Load<Texture2D>("GreenDude");
             myStarTexture = myGame.Content.Load<Texture2D>("strass");
             myBossTexture = myGame.Content.Load<Texture2D>("BigBlueBoss");
             myBubbleTexture = myGame.Content.Load<Texture2D>("bubble");
-            myFont = myGame.Content.Load<SpriteFont>("ammo");
+            myFont = myGame.Content.Load<SpriteFont>("font");
             myPlayerTexture = aPlayerTexture;
             myPlayer = new Player(myPlayerTexture, myGame)
             {
@@ -101,8 +107,8 @@ namespace SHMUP_Project
                     tempDir1.Normalize();
                     Vector2 tempDir2 = ((myPlayer.myPosition + myPlayer.myOffset) - (myEnemies[i].myPosition + new Vector2(80, 130) - myEnemies[i].myOffset));
                     tempDir2.Normalize();
-                    ShootAlt(-tempDir1, myEnemies[i].myPosition + new Vector2(540, 130) - myEnemies[i].myOffset, 2, 5);
-                    ShootAlt(-tempDir2, myEnemies[i].myPosition + new Vector2(80, 130) - myEnemies[i].myOffset, 2, 5);
+                    ShootAlt(-tempDir1, myEnemies[i].myPosition + new Vector2(540, 130) - myEnemies[i].myOffset, 2, 5, Color.White);
+                    ShootAlt(-tempDir2, myEnemies[i].myPosition + new Vector2(80, 130) - myEnemies[i].myOffset, 2, 5, Color.White);
                     myEnemies[i].myAttackTimer = myEnemies[i].myAttackSpeed;
                 }
                 myEnemies[i].myAttackTimer -= tempDeltaTime;
@@ -118,6 +124,7 @@ namespace SHMUP_Project
             if (myScore >= (myScoreTracker + 50))
             {
                 myEnemies.Add(new BlueBossEnemy(myBossTexture, new Vector2(myGame.myGraphics.PreferredBackBufferWidth / 2, 0), new Vector2(0, 1), 5, new Vector2(1f, 1f), 0, Color.White, 1, this, myBulletTexture));
+                BackDirUp();
                 myScoreTracker = myScore;
             }
 
@@ -239,7 +246,7 @@ namespace SHMUP_Project
             myPressTimer += tempDeltaTime;
             if (tempKeyState.IsKeyDown(Keys.Escape) && myPressTimer > 1)
             {
-                myGame.ChangeState(new PauseMenu(myGame,myGraphicsDevice,myContentManager));
+                myGame.ChangeState(new PauseMenu(myGame,myGraphicsDevice,myContentManager, myBackgroundDir));
                 myPressTimer = 0;
             }
 
@@ -304,7 +311,7 @@ namespace SHMUP_Project
             {
                 if (myPlayer.myAttackTimer <= 0)
                 {
-                    Shoot(myBackgroundDir.ToVector2(), (myPlayer.myPosition + myPlayer.myOffset), 1);
+                    Shoot(myBackgroundDir.ToVector2(), (myPlayer.myPosition + myPlayer.myOffset), 1, Color.Red);
                     myPlayer.myAttackTimer = myPlayer.myAttackSpeed;
                 }
             }
@@ -312,7 +319,7 @@ namespace SHMUP_Project
             {
                 if (myPlayer.myAttackTimer <= 0)
                 {
-                    ShootAlt(myBackgroundDir.ToVector2(), (myPlayer.myPosition + myPlayer.myOffset), 1, 10);
+                    ShootAlt(myBackgroundDir.ToVector2(), (myPlayer.myPosition + myPlayer.myOffset), 1, 10,Color.Red);
                     myPlayer.myAttackTimer = myPlayer.myAttackSpeed;
                 }
             }
@@ -330,32 +337,32 @@ namespace SHMUP_Project
             return dir;
         }
 
-        public void Shoot(Vector2 aDir, Vector2 aStartPos, int aOwner)
+        public void Shoot(Vector2 aDir, Vector2 aStartPos, int aOwner,Color aColor)
         {
             MouseState mouse = Mouse.GetState();
 
             if (aDir.X == 0)
             {
-                myBullets.Add(new Bullet(2f, aDir * -1, myBulletTexture, aStartPos, aOwner, Color.LightBlue, 1));
+                myBullets.Add(new Bullet(2f, aDir * -1, myBulletTexture, aStartPos, aOwner, aColor, 1));
             }
             else if (aDir.X != 0)
             {
-                myBullets.Add(new Bullet(2f, aDir * -1, myBulletTexture, aStartPos, aOwner, Color.LightBlue, 2));
+                myBullets.Add(new Bullet(2f, aDir * -1, myBulletTexture, aStartPos, aOwner, aColor, 2));
             }
 
         }
-        public void ShootAlt(Vector2 aDir, Vector2 aStartPos, int aOwner, float aSpeed)
+        public void ShootAlt(Vector2 aDir, Vector2 aStartPos, int aOwner, float aSpeed, Color aColor)
         {
             //Bullet tempBullet = new Bullet(10, new Vector2(-1, 0), myBulletTexture, (myPlayer.myPosition + myPlayer.myOffset), 1, Color.Gray, 3);
-            myBullets.Add(new Bullet(aSpeed, -aDir, myBulletTexture, aStartPos, aOwner, Color.Gray, 3));
-            if (myTimers.Count == 0)
-            {
-                myTimers.Add(0, new Timer(5));
-            }
-            else
-            {
-                myTimers.Add(myTimers.Count,new Timer(5));
-            }
+            myBullets.Add(new Bullet(aSpeed, -aDir, myBulletTexture, aStartPos, aOwner, aColor, 3));
+            //if (myTimers.Count == 0)
+            //{
+            //    myTimers.Add(0, new Timer(5));
+            //}
+            //else
+            //{
+            //    myTimers.Add(myTimers.Count,new Timer(5));
+            //}
         }
 
         #region BackDir

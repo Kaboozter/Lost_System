@@ -15,6 +15,21 @@ namespace SHMUP_Project
 
         static string myFileName = "saveData.ls";
 
+        public static string[] mySaveData = new string[5];
+        public static int[] mySplittedSaveData = new int[5];
+        public static string[] mysplittedSaveDataString = new string[5];
+
+        public static int[] GetSaveData()
+        {
+            mySaveData = File.ReadAllLines(GetFullDirectory);
+            for (int i = 0; i < mySaveData.Length; i++)
+            {
+                mysplittedSaveDataString[i] = mySaveData[i].Split(':')[0];
+                mySplittedSaveData[i] = int.Parse(mySaveData[i].Split(':')[1]);
+            }
+            return mySplittedSaveData;
+        }
+
         public static void Save()
         {
             if (!Directory.Exists(GetDirectory))
@@ -22,7 +37,13 @@ namespace SHMUP_Project
                 Directory.CreateDirectory(GetDirectory);
             }
 
-            File.WriteAllText(GetFullDirectory, "Bye World");
+            for (int i = 0; i < 5; i++)
+            {
+                mySaveData[i] = mysplittedSaveDataString[i] + ":" + mySplittedSaveData[i];
+            }
+
+            //File.WriteAllText(GetFullDirectory, "Bye World");
+            File.WriteAllLines(GetFullDirectory,mySaveData);
         }
 
     }

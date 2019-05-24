@@ -12,14 +12,14 @@ namespace SHMUP_Project
     class Bullet
     {
         #region Variables
-        public float mySpeed, myRotation = 0;
-        public Vector2 myDir, myPosition, myOffset, myScale = new Vector2(0.07f, 0.07f);
+        public float mySpeed, myRotation = 0, myAnimSpeed = 250, myAnimTimer = 5;
+        public Vector2 myDir, myPosition, myOffset, myScale = new Vector2(2f, 2f);
         public Texture2D myTexture;
         public Rectangle myRectangle;
         public float myDamage = 1;
         public Color myColor;
         public float myOwner;
-        public int myType;
+        public int myType, myCurAnimFrame = 0;
         #endregion
 
 
@@ -31,8 +31,8 @@ namespace SHMUP_Project
             myTexture = aTexture;
             myPosition = aStartPos;
             myType = aType;
-            myOffset = ((myTexture.Bounds.Size.ToVector2()) / 2);
-            myRectangle = new Rectangle((myOffset - myPosition).ToPoint(), new Point(20, 20));
+            myOffset = new Vector2(16,16) * myScale;
+            myRectangle = new Rectangle((myPosition - myOffset).ToPoint(), (new Vector2(16,16)*myScale).ToPoint());
             myColor = somePaint;
             myRotation = (float)Math.Atan2(myDir.X, myDir.Y) * -1;
         }
@@ -40,6 +40,19 @@ namespace SHMUP_Project
         public void Update(GameTime someGameTime)
         {
             float tempDeltaTime = (float)someGameTime.ElapsedGameTime.Milliseconds;
+
+            if (myAnimTimer <= 0)
+            {
+                
+                myCurAnimFrame += 16;
+                if (myCurAnimFrame > 48)
+                {
+                    myCurAnimFrame = 0;
+                }
+                myAnimTimer = myAnimSpeed;
+            }
+            myAnimTimer -= tempDeltaTime;
+
             if (myType == 1)
             {
                 myPosition.Y += (myDir.Y * mySpeed);
@@ -67,7 +80,7 @@ namespace SHMUP_Project
 
         public void DrawBullet(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(myTexture, myPosition, null, myColor, myRotation, myOffset, 1f, SpriteEffects.None, 1);
+            spriteBatch.Draw(myTexture, myPosition, new Rectangle(myCurAnimFrame,0,16,16), myColor, myRotation, myOffset, myScale, SpriteEffects.None, 1);
         }
     }
 }

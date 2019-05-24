@@ -34,6 +34,7 @@ namespace SHMUP_Project
             myShipTexture = someContent.Load<Texture2D>("squareship");
             //MediaPlayer.Play(mySong);
             MediaPlayer.IsRepeating = true;
+            
 
             #region Creating Button
 
@@ -78,8 +79,8 @@ namespace SHMUP_Project
 
         private void QuitButtons_Click(object sender, EventArgs e)
         {
-            myGame.Exit();
             SaveGameData.Save();
+            myGame.Exit();
         }
 
         private void StartButtons_Click(object sender, EventArgs e)

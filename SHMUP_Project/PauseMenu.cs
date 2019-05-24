@@ -33,7 +33,7 @@ namespace SHMUP_Project
 
         #endregion
 
-        public PauseMenu(Game1 aGame, GraphicsDevice aGraphicsDevice, ContentManager someContent) : base(aGame, aGraphicsDevice, someContent)
+        public PauseMenu(Game1 aGame, GraphicsDevice aGraphicsDevice, ContentManager someContent, Point aDir) : base(aGame, aGraphicsDevice, someContent)
         {
             #region Load
 
@@ -135,6 +135,7 @@ namespace SHMUP_Project
                 myTimer = 0f;
                 myPaused = false;
                 MediaPlayer.Resume();
+                
                 return false;
             }
 
