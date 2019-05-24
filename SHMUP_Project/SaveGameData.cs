@@ -17,7 +17,14 @@ namespace SHMUP_Project
 
         public static string[] mySaveData = new string[5];
         public static int[] mySplittedSaveData = new int[5];
-        public static string[] mysplittedSaveDataString = new string[5];
+        public static string[] mysplittedSaveDataString = new string[5]
+        {
+            "Parts Unlocked Ship 1",
+            "Parts Unlocked Ship 2",
+            "Parts Unlocked Ship 3",
+            "Current ship",
+            "Highscore"
+        };
 
         public static int[] GetSaveData()
         {
@@ -36,6 +43,8 @@ namespace SHMUP_Project
             {
                 Directory.CreateDirectory(GetDirectory);
             }
+
+            mySplittedSaveData[0] = 5;
 
             for (int i = 0; i < 5; i++)
             {

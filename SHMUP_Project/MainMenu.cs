@@ -8,13 +8,12 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
+using System.IO;
 
 namespace SHMUP_Project
 {
     class MainMenu : States
     {
-        public static Texture2D myShipTexture;
-        public static int myShip = 0;
         private List<Components> myButtons;
         Texture2D myMenu;
         Vector2 myOverPos = new Vector2(325, 190);
@@ -26,12 +25,16 @@ namespace SHMUP_Project
 
         public MainMenu(Game1 aGame1, GraphicsDevice someGraphics, ContentManager someContent) : base(aGame1, someGraphics, someContent)
         {
+            if (!File.Exists(SaveGameData.GetFullDirectory))
+            {
+                SaveGameData.Save();
+            }
 
             Texture2D buttonTexture = someContent.Load<Texture2D>("button");
             myButtonFont = someContent.Load<SpriteFont>("font");
             myMenu = someContent.Load<Texture2D>("menu");
             mySong = someContent.Load<Song>("menuMusic");
-            myShipTexture = someContent.Load<Texture2D>("squareship");
+            
             //MediaPlayer.Play(mySong);
             MediaPlayer.IsRepeating = true;
             
@@ -74,7 +77,7 @@ namespace SHMUP_Project
 
         private void StartHardButtons_Click(object sender, EventArgs e)
         {
-            myGame.ChangeState(new GameState(myGame, myGraphicsDevice, myContentManager,myShipTexture, myShip));
+            myGame.ChangeState(new GameState(myGame, myGraphicsDevice, myContentManager));
         }
 
         private void QuitButtons_Click(object sender, EventArgs e)

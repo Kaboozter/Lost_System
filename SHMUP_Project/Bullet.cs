@@ -19,7 +19,7 @@ namespace SHMUP_Project
         public float myDamage = 1;
         public Color myColor;
         public float myOwner;
-        public int myType, myCurAnimFrame = 0;
+        public int myType, myCurAnimFrame = 0, myPenetratingPower = 0;
         #endregion
 
 
@@ -35,6 +35,10 @@ namespace SHMUP_Project
             myRectangle = new Rectangle((myPosition - myOffset).ToPoint(), (new Vector2(16,16)*myScale).ToPoint());
             myColor = somePaint;
             myRotation = (float)Math.Atan2(myDir.X, myDir.Y) * -1;
+            if (myType == 4)
+            {
+                myPenetratingPower = 2;
+            }
         }
 
         public void Update(GameTime someGameTime)
@@ -56,14 +60,14 @@ namespace SHMUP_Project
             if (myType == 1)
             {
                 myPosition.Y += (myDir.Y * mySpeed);
-                myPosition.X += ((float)Math.Sin(myPosition.Y * 0.05f) * 1.5f) * tempDeltaTime;
+                myPosition.X += ((float)Math.Sin(myPosition.Y * 0.08f) * 1.5f) * tempDeltaTime;
                 myRectangle.Location = (myPosition - (myRectangle.Size.ToVector2() * 0.5f)).ToPoint();
                 myRotation = (float)Math.Atan2(myDir.X, myDir.Y) * -1;
             }
             else if (myType == 2)
             {
                 myPosition.X += (myDir.X * mySpeed);
-                myPosition.Y += ((float)Math.Sin(myPosition.X * 0.05f) * 1.5f) * tempDeltaTime;
+                myPosition.Y += ((float)Math.Sin(myPosition.X * 0.08f) * 1.5f) * tempDeltaTime;
                 myRectangle.Location = (myPosition - (myRectangle.Size.ToVector2() * 0.5f)).ToPoint();
                 myRotation = (float)Math.Atan2(myDir.X, myDir.Y) * -1;
             }
@@ -72,7 +76,11 @@ namespace SHMUP_Project
                 myPosition += (myDir * mySpeed);
                 myRectangle.Location = (myPosition - (myRectangle.Size.ToVector2() * 0.5f)).ToPoint();
             }
-
+            else if (myType == 4)
+            {
+                myPosition += (myDir * mySpeed);
+                myRectangle.Location = (myPosition - (myRectangle.Size.ToVector2() * 0.5f)).ToPoint();
+            }
 
         }
 

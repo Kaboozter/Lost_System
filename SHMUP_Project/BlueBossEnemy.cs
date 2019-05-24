@@ -10,10 +10,11 @@ namespace SHMUP_Project
 {
     class BlueBossEnemy : Enemy
     {
+        
 
         public BlueBossEnemy(Texture2D aEnemyTexture, Vector2 aEnemyStartPos, Vector2 aDir, float someEnemySpeed, Vector2 aEnemyScale, float aEnemyRotation, Color aEnemyColor, int aType, GameState aState, Texture2D aBulletTexture) : base(aEnemyTexture, aEnemyStartPos, aDir, someEnemySpeed, aEnemyScale, aEnemyRotation, aEnemyColor, aType, aState, aBulletTexture)
         {
-
+            myHP = 5;
         }
 
         public override void Update(GameTime someGameTime)

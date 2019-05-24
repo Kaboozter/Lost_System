@@ -23,6 +23,7 @@ namespace SHMUP_Project
         public float myRotation;
         public float myAttackSpeed = 0.2f;
         public float myAttackTimer;
+        public int myHP;
         public Texture2D myBulletTexture;
         public GameState myCurGame;
         int myIndex = 0;

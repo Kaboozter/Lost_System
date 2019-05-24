@@ -17,10 +17,11 @@ namespace SHMUP_Project
     {
         #region Variables
 
-        float myTimer = 0f;
+        float myTimer = 0f, myPressTimer = 0;
         int myShipSelected = 0;
         int[] mySaveData = new int[5];
         bool myPaused = true;
+        string myShipExplanation = " ", myLockedorNot = " ";
         List<Components> myButtons;
         List<Texture2D> myShips = new List<Texture2D>();
         List<int> myShipParts;
@@ -29,7 +30,7 @@ namespace SHMUP_Project
         Vector2 myOverPos = new Vector2(170, 350);
         Vector2 myCenterPos = new Vector2(470, 350);
         Vector2 myUnderPos = new Vector2(320, 290);
-        Texture2D myButtonText;
+        Texture2D myButtonText, myArrowTexture;
         SpriteFont myButtonFont;
         Song mySong1;
         Song mySong2;
@@ -50,13 +51,15 @@ namespace SHMUP_Project
 
             myShips.Add(myGame.Content.Load<Texture2D>("squareship"));
             myShips.Add(myGame.Content.Load<Texture2D>("squareship_Green"));
-            myScreen = someContent.Load<Texture2D>("paused");
+            myShips.Add(myGame.Content.Load<Texture2D>("squareship_Blue"));
+            myScreen = someContent.Load<Texture2D>("Hangar");
             //mySong1 = content.Load<Song>("inGameMusic");
             //mySong2 = content.Load<Song>("menuMusic");
             myShipParts = new List<int>
             {
                 mySaveData[0],
-                mySaveData[1]
+                mySaveData[1],
+                mySaveData[2]
             };
 
             #endregion
@@ -80,10 +83,12 @@ namespace SHMUP_Project
             };
             ConfirmButton.Click += ConfirmButton_Click;
 
+
             myButtons = new List<Components>()
             {
                 BackButton,
                 ConfirmButton,
+                
             };
 
             #endregion
@@ -92,20 +97,22 @@ namespace SHMUP_Project
         #region Button Clicks
 
 
-        private void BackButton_Click(object sender, EventArgs e)
+        private void BackButton_Click(object aSender, EventArgs anE)
         {
             myGame.PopStack();
             SaveGameData.Save(); MediaPlayer.Play(mySong2);
         }
 
-        private void ConfirmButton_Click(object sender, EventArgs e)
+        private void ConfirmButton_Click(object aSender, EventArgs anE)
         {
-            MainMenu.myShipTexture = myShips[myShipSelected];
-            MainMenu.myShip = myShipSelected;
-            myGame.PopStack();
-            SaveGameData.mySplittedSaveData[3] = myShipSelected + 1;
-            SaveGameData.Save();
-            //MediaPlayer.Play(mySong2);
+            if (mySaveData[myShipSelected] == 5)
+            {
+                myGame.PopStack();
+                SaveGameData.mySplittedSaveData[3] = myShipSelected;
+                SaveGameData.Save();
+                //MediaPlayer.Play(mySong2);
+            }
+
         }
 
         #endregion
@@ -119,7 +126,10 @@ namespace SHMUP_Project
             {
                 component.Draw(aSpriteBatch, someGameTime);
             }
-            aSpriteBatch.DrawString(myButtonFont,myShipParts[myShipSelected] + "/5",new Vector2(390,340),Color.White);
+            aSpriteBatch.DrawString(myButtonFont,myShipParts[myShipSelected] + "/5", new Vector2(myGame.myGraphics.PreferredBackBufferWidth * 0.5f - (myButtonFont.MeasureString("0/0").X * 0.5f), 360), Color.White);
+            aSpriteBatch.DrawString(myButtonFont, "Parts:", new Vector2(myGame.myGraphics.PreferredBackBufferWidth * 0.5f - (myButtonFont.MeasureString("Parts:").X * 0.5f), 330), Color.White);
+            aSpriteBatch.DrawString(myButtonFont, myLockedorNot, new Vector2(myGame.myGraphics.PreferredBackBufferWidth * 0.5f - (myButtonFont.MeasureString(myLockedorNot).X * 0.5f), 50), Color.White);
+            aSpriteBatch.DrawString(myButtonFont,myShipExplanation, new Vector2(myGame.myGraphics.PreferredBackBufferWidth * 0.5f - (myButtonFont.MeasureString(myShipExplanation).X * 0.5f), 170), Color.White);
             aSpriteBatch.End();
         }
 
@@ -132,21 +142,43 @@ namespace SHMUP_Project
             myGame.myGraphics.PreferredBackBufferHeight = 480;
             myGame.myGraphics.ApplyChanges();
 
-            if ((tempKeys.IsKeyDown(Keys.A) || tempKeys.IsKeyDown(Keys.Left)))
+
+            if (myShipSelected == 0)
+            {
+                myShipExplanation = "Straight single target fire, tripple fire, powerups";
+            }
+            if (myShipSelected == 1)
+            {
+                myShipExplanation = "Curving shots, burst fire, manual control over direction";
+            }
+            if (myShipSelected == 2)
+            {
+                myShipExplanation = "Aimable shots, penetrating shots, free movement";
+            }
+            if(myShipParts[myShipSelected] < 5)
+            {
+                myLockedorNot = "Locked";
+            }
+            if (myShipParts[myShipSelected] >= 5)
+            {
+                myLockedorNot = "Unlocked";
+            }
+
+            if ((tempKeys.IsKeyDown(Keys.A) || tempKeys.IsKeyDown(Keys.Left)) && myPressTimer <= 0)
             {
                 if (myShipSelected == 0)
                 {
-                    myShipSelected = 1;
+                    myShipSelected = 2;
                 }
                 else
                 {
                     myShipSelected--;
                 }
-
+                myPressTimer = 0.25f;
             }
-            if (tempKeys.IsKeyDown(Keys.D) || tempKeys.IsKeyDown(Keys.Right))
+            if ((tempKeys.IsKeyDown(Keys.D) || tempKeys.IsKeyDown(Keys.Right)) && myPressTimer <= 0)
             {
-                if (myShipSelected == 1)
+                if (myShipSelected == 2)
                 {
                     myShipSelected = 0;
                 }
@@ -154,7 +186,9 @@ namespace SHMUP_Project
                 {
                     myShipSelected++;
                 }
+                myPressTimer = 0.25f;
             }
+            myPressTimer -= tempDeltaTime;
 
             foreach (Buttons component in myButtons)
             {

@@ -19,6 +19,7 @@ namespace SHMUP_Project
         public float myAttackTimer;
         public bool myDead = false;
         public bool myNormalDiff = false;
+        public int myType;
 
         public Vector2 myDir;
         public Vector2 myPosition;
@@ -27,13 +28,14 @@ namespace SHMUP_Project
         public Rectangle myRectangle;
         Game1 myGame1;
 
-        public Player(Texture2D aTexture, Game1 aGame)
+        public Player(Texture2D aTexture, Game1 aGame, int aType)
         {
             myGame1 = aGame;
             myTexture = aTexture;
             myOffset = ((myTexture.Bounds.Size.ToVector2() * 0.5f));
             myPosition = new Vector2(300, 1000);
             myRectangle = new Rectangle((myOffset).ToPoint(), (myTexture.Bounds.Size.ToVector2()).ToPoint());
+            myType = aType;
         }
 
         public void Update(Point aBackgroundDir)
@@ -77,22 +79,26 @@ namespace SHMUP_Project
                 myRotation = (float)Math.PI;
             }
 
-            if (aBackgroundDir == new Point(1,0) && myPosition.X < (myGame1.myGraphics.PreferredBackBufferWidth-myTexture.Width))
+            if (myType != 2)
             {
-                myPosition.X += mySpeed * 2;
+                if (aBackgroundDir == new Point(1, 0) && myPosition.X < (myGame1.myGraphics.PreferredBackBufferWidth - myTexture.Width))
+                {
+                    myPosition.X += mySpeed * 2;
+                }
+                if (aBackgroundDir == new Point(-1, 0) && myPosition.X > (0))
+                {
+                    myPosition.X -= mySpeed * 2;
+                }
+                if (aBackgroundDir == new Point(0, 1) && myPosition.Y < (myGame1.myGraphics.PreferredBackBufferHeight - myTexture.Height))
+                {
+                    myPosition.Y += mySpeed * 2;
+                }
+                if (aBackgroundDir == new Point(0, -1) && myPosition.Y > (0))
+                {
+                    myPosition.Y -= mySpeed * 2;
+                }
             }
-            if (aBackgroundDir == new Point(-1,0) && myPosition.X > (0))
-            {
-                myPosition.X -= mySpeed * 2;
-            }
-            if (aBackgroundDir == new Point(0,1) && myPosition.Y < (myGame1.myGraphics.PreferredBackBufferHeight - myTexture.Height))
-            {
-                myPosition.Y += mySpeed * 2;
-            }
-            if (aBackgroundDir == new Point(0,-1) && myPosition.Y > (0))
-            {
-                myPosition.Y -= mySpeed * 2;
-            }
+
             #endregion
         }
 

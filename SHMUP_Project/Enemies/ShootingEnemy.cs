@@ -35,7 +35,7 @@ namespace SHMUP_Project
 
             if (myAttackTimer <= 0)
             {
-                myCurGame.ShootAlt(-myCurGame.myBackgroundDir.ToVector2(), myPosition + myOffset, 2, 5, Color.Green);
+                myCurGame.NormalShoot(-myCurGame.myBackgroundDir.ToVector2(), myPosition + myOffset, 2, 5, Color.Green);
                 myAttackTimer = myAttackSpeed;
             }
             myAttackTimer -= tempDeltaTime;
