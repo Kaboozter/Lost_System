@@ -1,5 +1,6 @@
 # Lost_System
 A Shoot em up game based on the classics
+
 You control the spaceship with WASD
 
 You have 3 different spaceships to chose from of which 1 is unlocked from the start
